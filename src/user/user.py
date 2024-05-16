@@ -13,7 +13,7 @@ class User:
         number_id (str): A unique identifier number for the user.
     """
 
-    def __init__(self, name: str, phone_number: int, number_id: str):
+    def __init__(self, name: str = None, phone_number: int = None, number_id: str = None):
         """Initializes a new `User` object.
 
         Args:
