@@ -25,3 +25,12 @@ The user enters their identification number and is asked whether they want to sc
 * Select the payment method (check, cash, transfer, card).
 * The system checks the inventory of available vehicles for sale and verifies if the selected vehicle is available.
 * If the vehicle is available, the purchase order is generated, and the user is instructed to proceed to the dealership.
+
+
+## Program execution guide
+
+To execute the program, follow the following command.
+
+```
+python -m src.app
+```

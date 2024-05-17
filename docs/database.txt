@@ -1,0 +1,7 @@
+The following queries must be followed in SQLite to create the database.
+
+CREATE TABLE users (
+	id INTEGER PRIMARY KEY,
+	name TEXT,
+	phone_number INTEGER
+);
