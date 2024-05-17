@@ -13,3 +13,6 @@ class PhoneNumberRepeated(DatabaseException):
 
 class NoFoundPhoneNumber(DatabaseException):
     """Class docstring"""
+
+class NoFoundUser(DatabaseException):
+    """Class docstring"""

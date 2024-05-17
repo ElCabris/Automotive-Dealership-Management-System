@@ -1,3 +1,4 @@
 src/__pycache__/
 src/exceptions/__pycache__/
 src/db/__pycache__/
+src/user/__pycache__/

@@ -12,6 +12,8 @@ class User:
         phone_number (int): The user's phone number.
         number_id (str): A unique identifier number for the user.
     """
+    def __repr__(self) -> str:
+        return f"id: {self._id_number}, name: {self._name}, phone_number: {self._phone_number}"
 
     def __init__(self, name: str = None, phone_number: int = None, number_id: str = None):
         """Initializes a new `User` object.
