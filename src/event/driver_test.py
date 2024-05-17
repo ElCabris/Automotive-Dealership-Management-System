@@ -9,8 +9,8 @@ A `DriverTest` instance stores information about a scheduled driver's test, incl
 """
 
 import datetime
-from user.user import User
-from car.car import Car
+from src.user.user import User
+from src.car.car import Car
 
 
 class DriverTest:

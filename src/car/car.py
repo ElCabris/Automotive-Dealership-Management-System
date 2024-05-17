@@ -8,14 +8,12 @@ rim type (sport, winter, standard), external color (`Color` object), engine disp
 from dataclasses import dataclass
 from typing import Optional
 
-from utils.color import Color
+from src.utils.color import Color
 
 @dataclass
 class Car:
     """Represents a car in the system.
-
-    Attributes:
-        _type (str): The type of car (e.g., sport, van, sedan).
+tiene una cita of car (e.g., sport, van, sedan).
         _rim (str): The type of rim (e.g., sport, winter, standard).
         _external_color (Color): The external color of the car (a `Color` object).
         _engine_displacement (int): The engine displacement of the car in cubic centimeters.
