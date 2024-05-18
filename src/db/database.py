@@ -3,8 +3,14 @@ an SQLite database file."""
 
 import sqlite3
 from typing import Optional
+import datetime
+
 from src.exceptions import db_exceptions
 from src.user.user import User
+from src.utils.color import Color
+from src.event.driver_test import DriverTest
+from src.exceptions import diver_test_exceptions
+from src.car.car import Car
 
 class Database:
     """
@@ -202,6 +208,147 @@ class Database:
                 return False
         finally:
             Database._disconnect()
+
+    @staticmethod
+    def add_driver_test(test_day: datetime.date,
+                        test_hour: datetime.time,
+                        car_type: str,
+                        rim_type: str,
+                        engine_displacement: int,
+                        external_color: Color,
+                        internal_color: Color,
+                        driver_id: Optional[int] = None) -> None:
+        """
+        Adds a driver test to the database.
+
+        Args:
+            test_day (datetime.date): The date of the test.
+            test_hour (datetime.time): The hour of the test.
+            car_type (str): The type of the car.
+            rim_type (str): The type of the rims.
+            engine_displacement (int): The engine displacement.
+            external_color (Color): The external color of the car in RGB format.
+            internal_color (Color): The internal color of the car in RGB format.
+            available (int): Availability status (default is 1).
+            driver_id (Optional[int]): The ID of the driver (must exist in users table or can be None).
+
+        Note:
+            If driver_id is None, the available field will automatically be set to 1 (true).
+        """
+        Database._connect()
+        try:
+            if driver_id is None:
+                available = 1
+            else:
+                available = 0
+
+            query = '''
+                INSERT INTO driver_test (test_day, test_hour, car_type, rim_type, engine_displacement,
+                                        external_color, internal_color, available, driver_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            '''
+            Database._cur.execute(query, (test_day.isoformat(), test_hour.isoformat(),
+                                          car_type, rim_type,
+                                          engine_displacement, str(external_color),
+                                          str(internal_color),
+                                          available, driver_id))
+            Database._con.commit()
+        finally:
+            Database._disconnect()
+
+    @staticmethod
+    def get_all_dates() -> list[datetime.date]:
+        """
+        Retrieves all unique test dates from the driver_test table
+
+        Returns
+            List[datetime.date]: A list fo uniqued test dates
+        """
+        Database._connect()
+        try:
+            query = "SELECT DISTINC test_day FROM driver_test"
+            Database._cur.execute(query)
+            result_query: list[tuple[str]] = Database._cur.fetchall()
+            unique_dates: list[datetime.date] = [datetime.date.fromisoformat(date[0]) for date in result_query]
+            return unique_dates
+        finally:
+            Database._disconnect()
+
+    @staticmethod
+    def get_available_datetime() -> dict[datetime.date, list[datetime.time]]:
+        """
+        Retrives all available hour by day from the driver_test table.
+
+        Returns:
+            dict[datetime.date, list[datetime.time]] A dictionary where keys are dates
+            and values are lists of available hours for each date.
+        """
+        Database._connect()
+        try:
+            query = "SELECT test_day, test_hour FROM driver_test WHERE available = 1"
+            Database._cur.execute(query)
+            result_query: list[tuple[str, str]] = Database._cur.fetchall()
+            available_datetime: dict[datetime.date, list[datetime.time]] = dict()
+
+            for date_str, hour_str in result_query:
+                test_date = datetime.date.fromisoformat(date_str)
+                test_hour = datetime.datetime.strptime(hour_str, "%H:%M:%S").time()
+
+                if test_date not in available_datetime:
+                    available_datetime[test_date] = list()
+
+                available_datetime[test_date].append(test_hour)
+
+            return available_datetime
+        finally:
+            Database._disconnect()
+
+    @staticmethod
+    def get_available_driver_test(car: Car, date: datetime.date, hour: datetime.time):
+        """metod docstring"""
+        try:
+            Database._connect()
+            query: str = """SELECT * FROM driver_test
+            WHERE car_type = ? AND rim_type = ? AND engine_displacement = ? AND external_color = ? AND internal_color = ? AND available = 1 AND test_day = ? AND test_hour = ?"""
+            Database._con.execute(query,
+                                  (car.get_type(),
+                                   car.get_rim(),
+                                   car.get_engine_displacement(),
+                                   str(car.get_external_color()),
+                                   str(car.get_internal_color()),
+                                   date, hour))
+        finally:
+            Database._disconnect()
+    @staticmethod
+    def book_driver_test(user: User, driver_test: DriverTest) -> None:
+        """
+        Books a driver test for a user at a specific date and time.
+
+        Args:
+            user_id (int): The user who is going to book.
+            driver_test (DriverTest): The booking to be made.
+        Returns:
+            bool: True if the booking was successful, False otherwise.
+        """
+
+        Database._connect()
+        try:
+            # Confirm that the space is available
+            query: str = "SELECT available FROM driver_test WHERE id = ?"
+            Database._cur.execute(query, (driver_test.get_id(),))
+            result_query: list[tuple[int]] = Database._cur.fetchall()
+
+            if not result_query[0][0]:
+                raise diver_test_exceptions.NoAvaliableDriverTest
+
+            query = "UPDATE driver_test SET available = 0, driver id = ? WHERE id = ?"
+            Database._cur.execute(query, (user.get_id(), driver_test.get_id()))
+            Database._con.commit()
+
+        finally:
+            Database._disconnect()
+
+
 if __name__ == '__main__':
     # agregar la lógica para crear la tabla
     pass

@@ -25,3 +25,19 @@ tiene una cita of car (e.g., sport, van, sedan).
     _external_color: Optional[Color] = None
     _engine_displacement: Optional[int] = None
     _internal_color: Optional[Color] = None
+
+    def get_type(self) -> str:
+        return self._type
+
+    def get_rim(self) -> str:
+        return self._rim
+
+    def get_external_color(self) -> Color:
+        return self._external_color
+
+    def get_internal_color(self) -> Color:
+        return self._internal_color
+
+    def get_engine_displacement(self) -> str:
+        return self._engine_displacement
+    

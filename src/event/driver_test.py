@@ -26,8 +26,13 @@ class DriverTest:
     def __init__(self, day: datetime.date = None,
                  hour: datetime.time = None,
                  user: User = None,
-                 car: Car = None):
+                 car: Car = None,
+                 number_id: int = None):
         self._day: datetime.date = day
         self._hour: datetime.time = hour
         self._user: User = user
         self._car: Car = car
+        self._id: int = number_id
+
+    def get_id(self) -> int:
+        return self._id

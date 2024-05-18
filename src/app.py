@@ -1,8 +1,11 @@
 """Module docstring"""
 import datetime
+from sqlite3 import Error
 from src.user.user import User
 from src.db.database import Database
 from src.exceptions import db_exceptions
+from src.exceptions import date_exceptions
+from src.utils.utils_date import enter_date
 
 def enter_user() -> User:
     """Function docstring"""
@@ -26,7 +29,7 @@ def enter_user() -> User:
     except db_exceptions.NoFoundUser:
         print("The user you entered does not exist.")
         enter_user()
-    except Exception:
+    except Error:
         print("An unexpected error has occurred.")
 
 
@@ -45,11 +48,36 @@ while option.lower() != 'a' and option.lower() != 'b':
 user: User = enter_user()
 
 if option.lower() == 'a':
-    print("""Select a day for you driver test""")
-    year: str = input("Enter the year: ")
-    moth: str = input("Enter the month: ")
-    day: str = input("Ente the day: ")
+    print("select a time slot")
+    time_slot: dict[datetime.time, list[datetime.date]] = Database.get_available_datetime()
 
+    for dates, times in time_slot.items():
+        print(f"date: {dates} - hours:", end=' ')
+        for i in times:
+            print(i, end=' ')
+
+    print("\nNow select the date on which you want to take the driving test")
+
+    while True:
+        try:
+            year: int = int(input("Enter the year: "))
+            month: int = int(input("Enter the month: "))
+            day: int = int(input("Enter the day: "))
+            date: datetime.date = enter_date(year, month, day)
+            break
+        except ValueError:
+            print("the entered date is invalid")
+        except date_exceptions.NoValidDate:
+            print("The date cannot be earlier than the current date.")
+
+    print("Select the hour")
+    
+    print(time_slot[date])
+
+    hora = int(input("ingresa la hora: "))
+    minute = int(input("ingresa el minuto: "))
+
+    hour = datetime.time(hora, minute, 0)
 
 else:
     pass

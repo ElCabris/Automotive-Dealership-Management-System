@@ -5,3 +5,19 @@ CREATE TABLE users (
 	name TEXT,
 	phone_number INTEGER
 );
+
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE driver_test(
+	id INTEGER PRIMARY KEY,
+	test_day DATE,
+	test_hour TIME,
+	car_type TEXT,
+	rim_type TEXT,
+	engine_displacement TEXT,
+	external_color TEXT,
+	internal_color TEXT,
+	available INTEGER,
+	driver_id INTEGER,
+	FOREIGN KEY (driver_id) REFERENCES users(id)
+);
