@@ -6,11 +6,11 @@ from typing import Optional
 import datetime
 
 from src.exceptions import db_exceptions
-from src.user.user import User
+from src.models.user import User
 from src.utils.color import Color
-from src.event.driver_test import DriverTest
+from src.models.driver_test import DriverTest
 from src.exceptions import diver_test_exceptions
-from src.car.car import Car
+from src.models.car import Car
 
 class Database:
     """
@@ -194,12 +194,12 @@ class Database:
             Database._disconnect()
 
     @staticmethod
-    def users_exist(phone_number: int) -> bool:
+    def user_exist(name: str, phone_number: int) -> bool:
         """method docstring"""
         try:
             Database._connect()
-            query: str = "SELECT id,name,phone_number FROM users WHERE phone_number = :phone_number"
-            Database._cur.execute(query, {"phone_number": phone_number})
+            query: str = "SELECT * FROM users WHERE phone_number = :phone_number AND name = :name"
+            Database._cur.execute(query, {"phone_number": phone_number, "name": name})
             result: list[tuple[int, str, int]] = Database._cur.fetchall()
 
             if result:

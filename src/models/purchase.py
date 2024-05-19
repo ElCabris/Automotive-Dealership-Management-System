@@ -6,8 +6,8 @@ A `Purchase` instance stores information about a completed car purchase, includi
 * The payment method used for the purchase (string).
 """
 
-from src.user.user import User
-from src.car.car import Car
+from src.models.user import User
+from src.models.car import Car
 
 class Purchase:
     """Represents a completed car purchase in the system.

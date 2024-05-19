@@ -1,83 +1,106 @@
-"""Module docstring"""
-import datetime
-from sqlite3 import Error
-from src.user.user import User
+"""This module provides a user interface for an Automotive Dealership Management System using tkinter."""
+
+import tkinter
+import tkinter.messagebox
+import tkinter.ttk
+from typing import Literal, Optional
 from src.db.database import Database
 from src.exceptions import db_exceptions
-from src.exceptions import date_exceptions
-from src.utils.utils_date import enter_date
+from src.models.user import User
 
-def enter_user() -> User:
-    """Function docstring"""
-    print("Please enter your information to continue with the process")
+class UILog:
+    """User Interface for logging in or registering users
+    in the Automotive Dealership Management System."""
 
-    try:
-        name = input("enter your name: ")
-        phone_number = int(input("enter your phone number: "))
+    FORMAT: tuple[str, int] = ("Arial", 14)
 
-        if not Database.users_exist(phone_number):
-            Database.add_user(name = name, phone_number = phone_number)
+    def __init__(self) -> None:
+        """
+        Initialize the login interface, setting up labels, entry boxes, and buttons.
+        """
+        self.__window: tkinter.Tk = tkinter.Tk()
+        self.__window.title("Automotive Dealership Management System")
+        self.__window.config(padx=35, pady=35)
 
-        return Database.get_user(phone_number, name)
+        # Enter name
+        self.__label_name: tkinter.Label = tkinter.Label(text="Ingresa tu nombre", font=self.FORMAT)
+        self.__label_name.grid(column=0, row=1)
 
-    except ValueError:
-        print("Please enter only numbers for the phone number.")
-        enter_user()
-    except db_exceptions.PhoneNumberRepeated:
-        print("This phone number is already associated with another user.")
-        enter_user()
-    except db_exceptions.NoFoundUser:
-        print("The user you entered does not exist.")
-        enter_user()
-    except Error:
-        print("An unexpected error has occurred.")
+        self.__box_name: tkinter.Entry = tkinter.Entry(width=20, font=self.FORMAT)
+        self.__box_name.grid(column=0, row=2)
 
+        # Enter phone number
+        self.__label_phone: tkinter.Label = tkinter.Label(text="Ingresa tu número de teléfono", font=self.FORMAT)
+        self.__label_phone.grid(column=0, row=3)
 
-print("""Welcome to our dealership! What can we help you with today?
+        # Validation for phone number entry
+        vcmd: tuple[str, Literal['%P']] = (self.__window.register(self.__validate_numeric), '%P')
+        self.__box_phone: tkinter.Entry = tkinter.Entry(width=20, font=self.FORMAT,
+                                         validate='key', validatecommand=vcmd)
+        self.__box_phone.grid(column=0, row=4)
 
-a.) Take a test drive
-b.) But car""")
+        self.__button_send: tkinter.Button = tkinter.Button(text="Send", font=self.FORMAT, command=self.save_data)
+        self.__button_send.grid(column=0, row=5)
 
-option: str = input()
+        self.__user: Optional[User] = None
+        self.__window.mainloop()
 
-while option.lower() != 'a' and option.lower() != 'b':
-    print("invalid option. Please enter one of the options (a or b)")
-    option = input()
+    def __validate_numeric(self, P: str) -> bool:
+        """
+        Validate that the input is numeric.
+        
+        Args:
+            P (str): The input string to validate.
+        
+        Returns:
+            bool: True if the input is numeric or empty, False otherwise.
+        """
+        return P.isdigit() or P == ""
 
-# login/register user
-user: User = enter_user()
+    def save_data(self) -> None:
+        """
+        Save data from input fields to the database. Checks if the user exists and either fetches or registers the user.
+        """
+        name: str = self.__box_name.get()
+        phone: int = self.__box_phone.get()
 
-if option.lower() == 'a':
-    print("select a time slot")
-    time_slot: dict[datetime.time, list[datetime.date]] = Database.get_available_datetime()
-
-    for dates, times in time_slot.items():
-        print(f"date: {dates} - hours:", end=' ')
-        for i in times:
-            print(i, end=' ')
-
-    print("\nNow select the date on which you want to take the driving test")
-
-    while True:
         try:
-            year: int = int(input("Enter the year: "))
-            month: int = int(input("Enter the month: "))
-            day: int = int(input("Enter the day: "))
-            date: datetime.date = enter_date(year, month, day)
-            break
-        except ValueError:
-            print("the entered date is invalid")
-        except date_exceptions.NoValidDate:
-            print("The date cannot be earlier than the current date.")
+            if not Database.user_exist(name, phone):
+                Database.add_user(name=name, phone_number=phone)
 
-    print("Select the hour")
-    
-    print(time_slot[date])
+            self.__user = Database.get_user(name=name, phone_number=phone)
+            UISelectEvent(self.__user)
 
-    hora = int(input("ingresa la hora: "))
-    minute = int(input("ingresa el minuto: "))
+        except db_exceptions.PhoneNumberRepeated:
+            tkinter.messagebox.showerror(
+                message="The phone number has already been registered by another user."
+                )
 
-    hour = datetime.time(hora, minute, 0)
+class UISelectEvent:
 
-else:
-    pass
+    """User Interface for user events after logging in."""
+
+    def __init__(self, user: User) -> None:
+        """
+        Initialize the event interface, setting up buttons for different actions.
+        
+        Args:
+            user (User): The user who has logged in.
+        """
+        self.__window: tkinter.Toplevel = tkinter.Toplevel()
+        self.__window.config(padx=35, pady=35)
+        self.__window.title("Welcome")
+
+        self.__driver_test: tkinter.ttk.Button = tkinter.ttk.Button(self.__window,
+                                                                    text="Driver Test")
+        self.__driver_test.grid(column=0, row=1)
+
+        self.__purchase: tkinter.ttk.Button = tkinter.ttk.Button(self.__window, text="Purchase")
+        self.__purchase.grid(column=1, row=1)
+        self.__window.focus()
+        self.__window.grab_set()
+        self.__user: User = user
+
+
+if __name__ == "__main__":
+    ui_log = UILog()
