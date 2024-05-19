@@ -1,0 +1,9 @@
+astroid==3.2.0
+Babel==2.15.0
+dill==0.3.8
+isort==5.13.2
+mccabe==0.7.0
+platformdirs==4.2.2
+pylint==3.2.0
+tkcalendar==1.6.1
+tomlkit==0.12.5

@@ -19,7 +19,12 @@ class Purchase:
         (e.g., "cheque", "cash", "transfer", "card").
     """
 
-    def __init__(self) -> None:
-        self._user: User
-        self._car: Car
-        self._payment_method: str
+    TYPES_CAR: tuple[str] = ('Sport Car', 'Can', 'Sedan')
+    TYPES_RIM: tuple[str] = ('Sport', 'Winter', 'Traditional Street')
+    ENGINE_DISPLACEMENT: tuple[int] = (1500, 2000, 2500)
+    PAY_METHODS: tuple[str] = ("check", "cash", "transfer", "card")
+
+    def __init__(self, user: User = None, car: Car = None, pay_method: str = None) -> None:
+        self._user: User = user
+        self._car: Car = car
+        self._payment_method: str = pay_method
