@@ -26,6 +26,11 @@ The user enters their identification number and is asked whether they want to sc
 * The system checks the inventory of available vehicles for sale and verifies if the selected vehicle is available.
 * If the vehicle is available, the purchase order is generated, and the user is instructed to proceed to the dealership.
 
+## Install packages
+To install the packages, you must execute the following command.
+```
+pip install -r requirements.txt
+```
 
 ## Program execution guide
 
