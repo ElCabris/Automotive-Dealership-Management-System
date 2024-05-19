@@ -201,14 +201,13 @@ class UIPurchase(Event):
         self.resul = Purchase(user=self._user, car=self._car, pay_method=pay_method)
         tkinter.messagebox.showinfo("Success", "The process is completed. We are waiting for you at the dealership")
 
-
 class UIDriver_test(Event):
     def __init__(self, user: User) -> None:
         super().__init__(user)
         self._window.title("Driver Test")
-        self._undo.grid(column=0, row=1)
+        self._undo.grid(column=0, row=2)
 
-        # Widget para seleccionar la fecha
+        # Select date
         self._date: DateEntry = DateEntry(self._window,
                                            width=12,
                                            background='darkblue',
@@ -216,18 +215,34 @@ class UIDriver_test(Event):
                                            borderwidth=2)
         self._date.grid(column=0, row=0)
 
-        # Widget para seleccionar la hora
+        # Select hour
         self._hour_label = tkinter.ttk.Label(self._window, text="Select hour:")
         self._hour_label.grid(column=1, row=0)
         self._hour_combo = tkinter.ttk.Combobox(self._window, values=["08:00", "09:00", "10:00", "11:00", "12:00"])
         self._hour_combo.grid(column=2, row=0)
 
-        # Widget para seleccionar el tipo de carro
+        # Select car
         self._car_type_label = tkinter.ttk.Label(self._window, text="Select car type:")
         self._car_type_label.grid(column=1, row=1)
         self._car_type_combo = tkinter.ttk.Combobox(self._window, values=Purchase.TYPES_CAR)
         self._car_type_combo.grid(column=2, row=1)
 
+        # Send button
+        self._send_button = tkinter.ttk.Button(self._window, text="Send", command=self.submit)
+        self._send_button.grid(column=1, row=2)
+
+    def submit(self):
+        date = self._date.get_date()
+        hour = self._hour_combo.get()
+        car_type = self._car_type_combo.get()
+
+        if not date or not hour or not car_type:
+            tkinter.messagebox.showerror("Invalid Input", "All fields must be filled")
+        else:
+            tkinter.messagebox.showinfo(
+                "Appointment Registered",
+                "Your appointment has been registered. Please proceed to the dealership."
+            )
 
 if __name__ == "__main__":
     ui_log = UILog()
