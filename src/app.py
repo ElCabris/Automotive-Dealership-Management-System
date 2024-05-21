@@ -141,6 +141,13 @@ class UIPurchase(Event):
 
         self._label_color: tkinter.Label = tkinter.Label(self._window, text="Select color (r, g, b)")
         self._label_color.grid(column=3, row=1)
+        # Sedes
+        self._label_sede: tkinter.Label = tkinter.Label(self._window, text="Select Engine displacement")
+        self._label_sede.grid(column=5, row=0)
+        self._sedes: tkinter.Listbox = tkinter.Listbox(self._window, selectmode=tkinter.SINGLE, exportselection=False)
+        for i in Purchase.SEDES:
+            self._sedes.insert(tkinter.END, i)
+        self._sedes.grid(column=6, row=0)
 
         vcmd = (self._window.register(self.validate_color), '%P')
         self._color_r: tkinter.ttk.Entry = tkinter.ttk.Entry(self._window, validate='key', validatecommand=vcmd)
@@ -187,8 +194,8 @@ class UIPurchase(Event):
         type_rim = self._types_rim.curselection()
         engine_displacement = self._engine_displacement.curselection()
         pay_method = self._pay.curselection()
-
-        if not type_car or not type_rim or not engine_displacement or not pay_method:
+        sede = self._sedes.curselection()
+        if not type_car or not type_rim or not engine_displacement or not pay_method or not pay_method:
             tkinter.messagebox.showerror("Invalid Input", "You must select all fields")
             return
 
@@ -196,10 +203,12 @@ class UIPurchase(Event):
         type_rim = Purchase.TYPES_RIM[type_rim[0]]
         engine_displacement = Purchase.ENGINE_DISPLACEMENT[engine_displacement[0]]
         pay_method = Purchase.PAY_METHODS[pay_method[0]]
+        sede = Purchase.SEDES[sede[0]]
 
         self._car = Car(type_car, type_rim, color, engine_displacement, color)
         self.resul = Purchase(user=self._user, car=self._car, pay_method=pay_method)
-        tkinter.messagebox.showinfo("Success", "The process is completed. We are waiting for you at the dealership")
+        tkinter.messagebox.showinfo(f"Name: {self._user.get_name()} Telefono: {self._user.get_number()}" f"tipo de carro: {type_car}",
+                                    f"tipo de rin: {type_rim}\nCilindraje: {engine_displacement}\nColor: {color}\nMétodo de pago: {pay_method}\nSede {sede}")
 
 class UIDriver_test(Event):
     def __init__(self, user: User) -> None:

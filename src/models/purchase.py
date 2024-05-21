@@ -23,6 +23,7 @@ class Purchase:
     TYPES_RIM: tuple[str] = ('Sport', 'Winter', 'Traditional Street')
     ENGINE_DISPLACEMENT: tuple[int] = (1500, 2000, 2500)
     PAY_METHODS: tuple[str] = ("check", "cash", "transfer", "card")
+    SEDES: tuple[str] = ("Medellín", "Cali", "Bogotá", "Pereira")
 
     def __init__(self, user: User = None, car: Car = None, pay_method: str = None) -> None:
         self._user: User = user

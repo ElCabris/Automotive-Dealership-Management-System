@@ -42,3 +42,7 @@ class User:
             str: The user's unique identifier number.
         """
         return self._id_number
+
+    def get_number(self) -> str:
+
+        return self._phone_number
